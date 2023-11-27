@@ -1,0 +1,4 @@
+2 Motorina -300.0
+3 Salar 1400.0
+15 Casa 300.0
+20 Mancare  -100.0
