@@ -92,7 +92,7 @@ public class AddPanel {
         addFrame.add(priceField);
 
         JTextField dateField = new JTextField();
-        SimpleDateFormat formatter= new SimpleDateFormat("dd/MM/YYYY");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date(System.currentTimeMillis());
 
         dateField.setText(formatter.format(date));
@@ -111,6 +111,8 @@ public class AddPanel {
         cancelButton.setFont(new Font("Times New Roman",Font.PLAIN,30));
         addFrame.add(cancelButton);
 
+
+
         addButton.addMouseListener(new MouseListener()
         {
             @Override
@@ -119,13 +121,11 @@ public class AddPanel {
                     String sql = "INSERT INTO MoneyManager (mdate, name, price) VALUES (STR_TO_DATE('" + dateField.getText() + "', '%Y-%m-%d'), '" + nameField.getText() + "', '" + priceField.getText() + "')";
                     Sql.st.executeUpdate(sql);
                     MoneyPanel.addMoneyFromDatabase(DatePanel.shortDate);
-
                     addFrame.dispose();
                 } catch (Exception e2) {
                     JOptionPane.showMessageDialog(null, "Invalid data inserted!", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
             }
-
             @Override
             public void mousePressed(MouseEvent e) {
             }

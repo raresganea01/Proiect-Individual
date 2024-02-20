@@ -1,4 +1,11 @@
 package program;
+import com.opencsv.CSVWriter;
+import com.spire.xls.ExcelVersion;
+import com.spire.xls.IgnoreErrorType;
+import com.spire.xls.Workbook;
+import com.spire.xls.Worksheet;
+
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -94,11 +101,22 @@ public class MoneyPanel {
         deleteAllMoney();
 
         try {
-            String sql = "Select id, name ,mdate from moneymanager WHERE date_format(mdate, '%Y-%m') = DATE_FORMAT(STR_TO_DATE(?, '%Y-%m'), '%Y-%m');";
+            String sql ="";
+            boolean filteredSearch = !(shortDate ==null ||shortDate.isEmpty());
+            if(filteredSearch){
+                sql = "Select id, mdate ,name, price from moneymanager WHERE mdate is not null AND DATE_FORMAT(mdate, '%Y-%m') = ?";
+            }
+            else {
+                sql = "Select id, mdate ,name, price from moneymanager WHERE mdate is not null "; // for all date formats
+            }
+
             System.out.println("Outer");
+            System.out.println(shortDate);
 
             try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-                pstmt.setString(1, shortDate);
+               if(filteredSearch){
+                   pstmt.setString(1, shortDate);
+               }
                 ResultSet result = pstmt.executeQuery();
 
                 System.out.println(result);
@@ -124,6 +142,68 @@ public class MoneyPanel {
 
 
     }
+
+    public static void convertCSVtoExcel(){
+        //Create a workbook
+        Workbook workbook = new Workbook();
+        //Load a sample CSV file
+        workbook.loadFromFile("data.csv", ",", 1, 1);
+
+        //Get the first worksheet
+        Worksheet sheet = workbook.getWorksheets().get(0);
+
+        //Specify the cell range and ignore errors when setting numbers in the cells as text
+        sheet.getCellRange("A1:D100").setIgnoreErrorOptions(EnumSet.of(IgnoreErrorType.NumberAsText));
+
+        //Automatically adjust the height of the rows and width of the columns
+        sheet.getAllocatedRange().autoFitColumns();
+        sheet.getAllocatedRange().autoFitRows();
+
+        //Save the document to an XLSX file
+        workbook.saveToFile("Excel1.xlsx", ExcelVersion.Version2013);
+    }
+
+
+    public static void exportToCSV() {
+
+        String csvFilePath = "data.csv";
+        try {
+            // Connect to your database
+            String sql = "SELECT id, mdate, name, price FROM moneymanager";
+            try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+                ResultSet result = pstmt.executeQuery();
+
+                // Query to retrieve data
+                PreparedStatement statement = connection.prepareStatement(sql);
+                List<String[]> data = new ArrayList<>();
+                while (result.next()) {
+                    String mdate = result.getString("mdate");
+                    int id = result.getInt("id");
+                    String name = result.getString("name");
+                    double price = result.getDouble("price");
+                    String[] row = {String.valueOf(id), mdate, name, String.valueOf(price)};
+                    data.add(row);
+                    // adaug row in data
+                }
+                try (CSVWriter writer = new CSVWriter(new FileWriter(csvFilePath))) {
+                    for (String[] row : data) {
+                        writer.writeNext(row);
+                    }
+                    System.out.println("CSV file written successfully!");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            // result.close();
+            //statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
     /**
      * Method which adds incomes and expenses from the existing ArrayList.
      */

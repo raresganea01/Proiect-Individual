@@ -19,8 +19,8 @@ public class DatePanel {
     {
 
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM");
-        Date date = new Date(System.currentTimeMillis());
-        shortDate=formatter.format(date);
+        //Date date = new Date(System.currentTimeMillis());
+        //shortDate=formatter.format(date);
 
         datePanel = new JPanel();
         //datePanel.setBackground(Color.BLUE);

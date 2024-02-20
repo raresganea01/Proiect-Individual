@@ -65,6 +65,7 @@ public class BalancePanel {
      */
     public static void updateData()
     {
+
         double income = 0, expenses = 0, balance = 0;
         for(Money i : MoneyPanel.moneyList)
         {

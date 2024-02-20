@@ -2,6 +2,7 @@ package program;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -128,6 +129,7 @@ public class Money {
         labelName.setText(name);
         labelPrice.setText(String.valueOf(price));
         if (price < 0)
+
             labelPrice.setForeground(Color.red);
         else
             labelPrice.setForeground(Color.green);
@@ -240,30 +242,43 @@ public class Money {
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-                    String sql = "update moneymanager set mdate=to_date('" + dateField.getText()
-                            + "','DD/MM/YYYY'), name='" + nameField.getText() + "', price=" + priceField.getText()
-                            + " where id=" + ID;
-                    Sql.st.executeUpdate(sql);
-                    name = nameField.getText();
-                    price = Double.valueOf(priceField.getText());
-                    date = dateField.getText();
-                    Matcher matcher = Pattern.compile("\\d+").matcher(dateField.getText());
-                    matcher.find();
-                    day = Integer.valueOf(matcher.group());
+                    String updateSql = "UPDATE moneymanager SET mdate = ?, name = ?, price = ? WHERE id = ?";
+                    try (PreparedStatement pstmt = Sql.connection.prepareStatement(updateSql)) {
+                        pstmt.setDate(1, java.sql.Date.valueOf(dateField.getText())); // Assuming dateField is a JTextField
+                        pstmt.setString(2, nameField.getText());
+                        pstmt.setDouble(3, Double.parseDouble(priceField.getText())); // Assuming priceField is a JTextField
+                        pstmt.setInt(4, ID); // Assuming ID is a String
 
-                    labelName.setText(name);
-                    labelPrice.setText(String.valueOf(price));
-                    labelDate.setText(String.valueOf(day));
-                    if (price < 0)
-                        labelPrice.setForeground(Color.red);
-                    else
-                        labelPrice.setForeground(Color.green);
-                    BalancePanel.updateData();
-                    editFrame.dispose();
+                        int rowsAffected = pstmt.executeUpdate();
+
+                        // Check the result
+                        if (rowsAffected > 0) {
+                            name = nameField.getText();
+                            price = Double.valueOf(priceField.getText());
+                            date = dateField.getText();
+                            Matcher matcher = Pattern.compile("\\d+").matcher(dateField.getText());
+                            matcher.find();
+                            day = Integer.valueOf(matcher.group());
+
+                            labelName.setText(name);
+                            labelPrice.setText(String.valueOf(price));
+                            labelDate.setText(String.valueOf(day));
+                            if (price < 0)
+                                labelPrice.setForeground(Color.red);
+                            else
+                                labelPrice.setForeground(Color.green);
+                            BalancePanel.updateData();
+                            editFrame.dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(null, "No rows updated!", "INFO", JOptionPane.INFORMATION_MESSAGE);
+                        }
+                    }
                 } catch (Exception e3) {
+                    e3.printStackTrace(); // Log the exception for debugging purposes
                     JOptionPane.showMessageDialog(null, "Invalid data inserted!", "ERROR", JOptionPane.ERROR_MESSAGE);
                 }
             }
+
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -324,4 +339,35 @@ public class Money {
         // return position + " " + date + " " + name + " " + price;
     }
 
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

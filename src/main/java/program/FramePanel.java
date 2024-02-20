@@ -27,6 +27,7 @@ public class FramePanel{
         new AddPanel();
         new MoneyPanel();
 
+
         new OptionsPanel();
 
 

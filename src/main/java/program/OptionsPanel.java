@@ -31,6 +31,12 @@ public class OptionsPanel implements ActionListener {
         JButton button4 = new JButton("Print list");
         button4.setFont(new Font("Times New Roman",Font.PLAIN,25));
 
+        JButton exportButton = new JButton("Export to CSV");
+        exportButton.setFont(new Font("Times New Roman",Font.PLAIN,25));
+
+        JButton convertCSVtoExcelButton = new JButton("Convert to Excel");
+        convertCSVtoExcelButton.setFont(new Font("Times New Roman",Font.PLAIN,25));
+
         ascending = new JRadioButton("Ascending",true);
         ascending.setFont(new Font("Times New Roman",Font.PLAIN,25));
         descending = new JRadioButton("Descending");
@@ -47,6 +53,9 @@ public class OptionsPanel implements ActionListener {
         button2.addActionListener(this);
         button3.addActionListener(this);
         button4.addActionListener(this);
+        exportButton.addActionListener(this);
+        convertCSVtoExcelButton.addActionListener(this);
+
         optionsPanel.add(Box.createVerticalStrut(30));
         optionsPanel.add(button1);
         optionsPanel.add(Box.createVerticalStrut(15));
@@ -54,6 +63,10 @@ public class OptionsPanel implements ActionListener {
         optionsPanel.add(Box.createVerticalStrut(15));
         optionsPanel.add(button3);
         optionsPanel.add(Box.createVerticalStrut(15));
+        optionsPanel.add(exportButton);
+        optionsPanel.add(Box.createVerticalStrut(15));
+//        optionsPanel.add(convertCSVtoExcelButton);
+//        optionsPanel.add(Box.createVerticalStrut(15));
         //optionsPanel.add(button4);
 
     }
@@ -81,6 +94,16 @@ public class OptionsPanel implements ActionListener {
         if(ae.getActionCommand().equals("Print list"))
         {
             MoneyPanel.moneyList.forEach(System.out::println);
+        }
+        if(ae.getActionCommand().equals("Export to CSV"))
+        {
+            System.out.println("se printeaza");
+            MoneyPanel.exportToCSV();
+        }
+        if(ae.getActionCommand().equals("Convert to Excel"))
+        {
+            System.out.println("se converteste");
+            MoneyPanel.convertCSVtoExcel();
         }
     }
 }
